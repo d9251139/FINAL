@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>納稅者權利保護官問答遊戲</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 1em;
+      margin: 0;
+      text-align: center;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #aaa;
+    }
+    .question {
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+    .answers button {
+      display: block;
+      margin: 8px auto;
+      padding: 12px;
+      width: 100%;
+      max-width: 400px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .answers button:hover {
+      background: #d0d0d0;
+    }
+    #result, #prize-section, #retry-btn {
+      display: none;
+      margin-top: 20px;
+    }
+    #retry-btn button, #draw-button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #ff7043;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #draw-button {
+      background-color: #4CAF50;
+      margin-top: 10px;
+    }
+    #prize-result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    @media (max-width: 600px) {
+      .quiz-container {
+        padding: 15px;
+      }
+      .answers button {
+        font-size: 15px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <h2>納稅者權利保護官問答遊戲</h2>
+  <div id="quiz"></div>
+  <div id="result"></div>
+
+  <div id="retry-btn">
+    <button onclick="restartQuiz()">再試一次</button>
+  </div>
+
+  <div id="prize-section">
+    <h3>🎯 全部答對！可抽獎！</h3>
+    <button id="draw-button" onclick="drawPrize()">我要抽獎</button>
+    <div id="prize-result"></div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "納稅者權利保護官的主要職責是？",
+    options: ["協助稅捐稽徵", "處理納稅人權益申訴", "負責催繳稅款", "進行稅務查核"],
+    answer: 1
+  },
+  {
+    q: "納稅者可向哪裡申請保護官協助？",
+    options: ["地方法院", "稅務顧問公司", "國稅局或地方稅務局", "立法院"],
+    answer: 2
+  },
+  {
+    q: "納稅者權利保護官是否可介入稅務爭議處理？",
+    options: ["是", "否"],
+    answer: 0
+  },
+  {
+    q: "納稅者權利保護官是否獨立於稅務稽徵單位？",
+    options: ["是", "否"],
+    answer: 0
+  },
+  {
+    q: "納稅者權利保護官制度的目的為何？",
+    options: ["增加稅收", "減少稅捐爭議", "保障納稅者權益", "提供法律諮詢"],
+    answer: 2
+  }
+];
+
+const prizeInventory = {
+  "玻璃杯": 10,
+  "保溫保冷袋": 10,
+  "隔熱墊": 10
+};
+
+function drawPrize() {
+  const availablePrizes = Object.entries(prizeInventory).filter(([_, count]) => count > 0);
+  if (availablePrizes.length === 0) {
+    document.getElementById('prize-result').innerText = "🎁 抱歉，獎品已全部抽完";
+    return;
+  }
+  const randomIndex = Math.floor(Math.random() * availablePrizes.length);
+  const [prize, count] = availablePrizes[randomIndex];
+  prizeInventory[prize]--;
+  document.getElementById('prize-result').innerText = `🎁 恭喜您抽中：${prize}！`;
+}
+
+let current = 0;
+let score = 0;
+
+function showQuestion() {
+  if (current >= questions.length) {
+    document.getElementById('quiz').innerHTML = '';
+    document.getElementById('result').innerHTML = `您答對了 ${score} / ${questions.length} 題！`;
+    document.getElementById('result').style.display = 'block';
+    if (score === questions.length) {
+      document.getElementById('prize-section').style.display = 'block';
+    } else {
+      document.getElementById('result').innerHTML += `<p>很可惜，必須全部答對才能參加抽獎！</p>`;
+      document.getElementById('retry-btn').style.display = 'block';
+    }
+    return;
+  }
+
+  const q = questions[current];
+  let html = `<div class="question"><strong>第 ${current + 1} 題：</strong>${q.q}</div><div class="answers">`;
+  q.options.forEach((opt, i) => {
+    html += `<button onclick="checkAnswer(${i})">${opt}</button>`;
+  });
+  html += `</div>`;
+  document.getElementById('quiz').innerHTML = html;
+}
+
+function checkAnswer(selected) {
+  if (selected === questions[current].answer) {
+    score++;
+  }
+  current++;
+  showQuestion();
+}
+
+function restartQuiz() {
+  current = 0;
+  score = 0;
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('retry-btn').style.display = 'none';
+  document.getElementById('prize-section').style.display = 'none';
+  document.getElementById('prize-result').innerHTML = '';
+  showQuestion();
+}
+
+showQuestion();
+</script>
+
+</body>
+</html>
