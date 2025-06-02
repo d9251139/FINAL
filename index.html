@@ -128,6 +128,8 @@ const prizeInventory = {
 };
 
 function drawPrize() {
+  document.getElementById("draw-button").disabled = true;
+
   const availablePrizes = Object.entries(prizeInventory).filter(([_, count]) => count > 0);
   if (availablePrizes.length === 0) {
     document.getElementById('prize-result').innerText = "🎁 抱歉，獎品已全部抽完";
